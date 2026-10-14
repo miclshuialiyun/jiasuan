@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>家算 — 房贷 · 二手房税费 · 装修预算本地计算器</title>
+<meta name="description" content="家算是一款完全离线的房贷、二手房税费与装修预算计算器。不上传数据、无广告、无登录，一次买断。">
+<style>
+  :root{
+    --brand:#0E8C8A;
+    --brand-dark:#0B3A6E;
+    --ink:#1d1d1f;
+    --muted:#6b7280;
+    --line:#e5e7eb;
+    --bg:#ffffff;
+    --soft:#f4f8f8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    color:var(--ink);line-height:1.75;background:var(--bg);-webkit-font-smoothing:antialiased;
+  }
+  header{
+    background:linear-gradient(160deg,#12508F 0%,var(--brand) 60%,#0D9C8F 100%);
+    color:#fff;padding:56px 20px 48px;text-align:center;
+  }
+  header .appicon{width:88px;height:88px;border-radius:20px;box-shadow:0 10px 28px rgba(0,0,0,.22);}
+  header .logo{display:inline-flex;align-items:center;gap:10px;font-size:26px;font-weight:800;letter-spacing:.5px;margin-top:16px;}
+  header h1{font-size:38px;margin-top:14px;font-weight:900;letter-spacing:1px;}
+  header p.tag{opacity:.94;margin-top:10px;font-size:17px;}
+  header p.sub{opacity:.8;margin-top:6px;font-size:14px;}
+  nav{
+    background:var(--soft);border-bottom:1px solid var(--line);
+    padding:12px 20px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap;
+    position:sticky;top:0;z-index:10;
+  }
+  nav a{text-decoration:none;color:var(--brand);font-weight:600;font-size:14px;padding:6px 14px;border-radius:999px;border:1px solid transparent;}
+  nav a:hover{background:#fff;border-color:var(--line);}
+  nav a.active{background:var(--brand);color:#fff;}
+  main{max-width:920px;margin:0 auto;padding:44px 20px 60px;}
+  section{margin-bottom:46px;}
+  h2{font-size:24px;margin:0 0 18px;color:var(--brand-dark);text-align:center;}
+  h3{font-size:17px;}
+  .lead{text-align:center;color:var(--muted);max-width:660px;margin:0 auto 30px;font-size:15px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;}
+  .card{background:var(--soft);border:1px solid var(--line);border-radius:16px;padding:20px;}
+  .card .ico{font-size:26px;}
+  .card h3{margin:8px 0 6px;color:var(--brand-dark);}
+  .card p{font-size:14px;color:#4b5563;}
+  .principles{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;}
+  .principle{border:1px solid var(--line);border-radius:16px;padding:22px;text-align:center;background:#fff;}
+  .principle .num{display:inline-flex;width:38px;height:38px;border-radius:50%;background:var(--brand);color:#fff;align-items:center;justify-content:center;font-weight:800;margin-bottom:10px;}
+  .principle h3{color:var(--brand-dark);margin-bottom:6px;}
+  .principle p{font-size:14px;color:#4b5563;}
+  .plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
+  .plan{border:1px solid var(--line);border-radius:16px;padding:22px;text-align:center;background:#fff;}
+  .plan.feature{border-color:var(--brand);box-shadow:0 6px 20px rgba(14,140,138,.14);}
+  .plan .name{font-weight:700;color:var(--brand-dark);}
+  .plan .price{font-size:30px;font-weight:900;color:var(--brand);margin:8px 0 2px;}
+  .plan .price small{font-size:13px;font-weight:600;color:var(--muted);}
+  .plan .note{font-size:13px;color:var(--muted);}
+  .plan ul{list-style:none;margin-top:12px;text-align:left;font-size:14px;color:#4b5563;}
+  .plan ul li{padding:4px 0 4px 20px;position:relative;}
+  .plan ul li:before{content:"✓";position:absolute;left:0;color:var(--brand);font-weight:800;}
+  .cta{display:inline-block;background:var(--brand);color:#fff;text-decoration:none;font-weight:700;padding:14px 30px;border-radius:999px;font-size:16px;}
+  .cta-wrap{text-align:center;margin-top:18px;}
+  .note-line{text-align:center;color:var(--muted);font-size:13px;margin-top:12px;}
+  .shot-wrap{display:flex;gap:14px;overflow-x:auto;padding:6px 0 10px;}
+  .shot-wrap img{width:230px;border-radius:18px;border:1px solid var(--line);flex:0 0 auto;}
+  .disclaimer{
+    background:#FFF8EC;border:1px solid #F5D9A8;border-radius:14px;padding:16px 18px;font-size:13.5px;color:#7a5a16;
+  }
+  footer{background:var(--brand-dark);color:#cfe0ee;text-align:center;padding:28px 20px;font-size:13px;line-height:1.9;}
+  footer a{color:#fff;text-decoration:underline;}
+  footer .links{margin:8px 0;}
+</style>
+</head>
+<body>
+<header>
+  <img class="appicon" src="icon.png" alt="家算 App 图标">
+  <div class="logo">家算</div>
+  <h1>买房这笔账，自己算清楚</h1>
+  <p class="tag">房贷 · 二手房税费 · 装修预算，一个 App 全算完</p>
+  <p class="sub">完全离线 · 零广告 · 免登录 · 一次买断</p>
+</header>
+
+<nav>
+  <a href="index.html" class="active">产品主页</a>
+  <a href="support.html">技术支持</a>
+  <a href="privacy.html">隐私政策</a>
+  <a href="terms.html">使用条款</a>
+</nav>
+
+<main>
+  <section>
+    <p class="lead">家算是一款<strong>本地优先</strong>的买房算账工具：把房屋总价、首付、贷款年限、利率、契税、增值税、个税、装修分项一次性算清楚。所有计算都在你的 iPhone 上完成，不联网、不上传、不需要注册。</p>
+  </section>
+
+  <section>
+    <h2>界面一览</h2>
+    <div class="shot-wrap">
+      <img src="shot-mortgage.png" alt="房贷计算界面">
+      <img src="shot-tax.png" alt="二手房税费界面">
+      <img src="shot-reno.png" alt="装修预算界面">
+      <img src="shot-compare.png" alt="方案对比界面">
+    </div>
+  </section>
+
+  <section>
+    <h2>核心功能</h2>
+    <div class="grid">
+      <div class="card">
+        <div class="ico">🏦</div>
+        <h3>房贷计算</h3>
+        <p>商业贷款、公积金、组合贷三种方式，等额本息与等额本金两种还款方式，逐月还款明细可展开查看。</p>
+      </div>
+      <div class="card">
+        <div class="ico">🧾</div>
+        <h3>二手房税费</h3>
+        <p>严格按「增值税 → 不含税价 → 契税 / 个税 → 附加税费」的计算链推导，买卖双方各自承担多少一目了然。</p>
+      </div>
+      <div class="card">
+        <div class="ico">🔨</div>
+        <h3>装修预算</h3>
+        <p>材料与人工分开记账，内置常用分项模板，小计与合计实时汇总，超预算一眼就看出。</p>
+      </div>
+      <div class="card">
+        <div class="ico">⚖️</div>
+        <h3>方案对比</h3>
+        <p>两套方案并排比较，月供、总利息、还款总额、税费、合计支出的差异逐项列出，涨红跌绿一眼看清。</p>
+      </div>
+      <div class="card">
+        <div class="ico">📄</div>
+        <h3>PDF 导出与本地备份</h3>
+        <p>在手机上直接生成 PDF 留存或发给家人；也可导出备份文件放进「文件」App，换机不丢方案。</p>
+      </div>
+      <div class="card">
+        <div class="ico">⚙️</div>
+        <h3>政策参数可调</h3>
+        <p>个税核定征收率、城市维护建设税、三套及以上契税税率、附加税费是否减半，都可在设置里按当地口径调整。</p>
+      </div>
+      <div class="card">
+        <div class="ico">✈️</div>
+        <h3>全离线可用</h3>
+        <p>飞行模式、地铁里、售楼处信号差的地方都能正常测算，计算不依赖任何网络请求。</p>
+      </div>
+      <div class="card">
+        <div class="ico">🔢</div>
+        <h3>精确到分</h3>
+        <p>金额全程使用十进制精确运算，不是浮点近似；到分不丢精度，末期尾差自动结清。</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>我们的三条原则</h2>
+    <div class="principles">
+      <div class="principle">
+        <div class="num">1</div>
+        <h3>零广告零追踪</h3>
+        <p>不含广告，不接入任何统计、归因或广告 SDK，也没有行为埋点。</p>
+      </div>
+      <div class="principle">
+        <div class="num">2</div>
+        <h3>数据不出本机</h3>
+        <p>不申请任何系统权限，没有账号体系，你的房价、收入和方案不会离开这台设备。</p>
+      </div>
+      <div class="principle">
+        <div class="num">3</div>
+        <h3>一次买断</h3>
+        <p>高级版 ¥18 一次性买断，没有订阅、没有自动续费、不做强制付费墙。</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>免费版与高级版</h2>
+    <p class="lead">免费版已经可以完整使用房贷、税费、装修三个模块的全部测算能力，仅对「方案保存数量」与进阶功能做了区分。</p>
+    <div class="plans">
+      <div class="plan">
+        <div class="name">免费版</div>
+        <div class="price">¥0</div>
+        <div class="note">永久免费，无时间限制</div>
+        <ul>
+          <li>房贷 / 税费 / 装修全部测算能力</li>
+          <li>跨模块共可保存 1 套方案</li>
+          <li>无广告、无内购弹窗骚扰</li>
+        </ul>
+      </div>
+      <div class="plan feature">
+        <div class="name">高级版</div>
+        <div class="price">¥18<small> 一次性买断</small></div>
+        <div class="note">永久有效 · 不订阅 · 不续费</div>
+        <ul>
+          <li>无限方案保存</li>
+          <li>多方案横向对比</li>
+          <li>PDF 导出</li>
+          <li>本地备份文件导出</li>
+        </ul>
+      </div>
+    </div>
+    <p class="note-line">购买由 Apple 处理，可在 App 内「设置 → 恢复购买」随时恢复，换机不重复扣费。实际价格以 App Store 结算页为准。</p>
+  </section>
+
+  <section>
+    <h2>重要说明</h2>
+    <div class="disclaimer">
+      <strong>免责声明：</strong>家算仅提供数学数值测算，结果仅供参考，<strong>不构成购房、税务、金融、装修决策建议</strong>。房贷政策与税费规则各地实时变动，最终请以银行、不动产登记中心、税务机关的官方信息为准。本 App 不上传你的任何数据，所有计算与方案均保存在本机。
+    </div>
+  </section>
+
+  <section>
+    <h2>立即体验</h2>
+    <p class="lead">在 App Store 搜索「家算」，或点击下方按钮前往下载。支持 iPhone。</p>
+    <div class="cta-wrap">
+      <!-- TODO：拿到 App Store 应用 ID 后，把下面的搜索链接换成 https://apps.apple.com/cn/app/idXXXXXXXXXX -->
+      <a class="cta" href="https://apps.apple.com/cn/search?term=%E5%AE%B6%E7%AE%97">在 App Store 查看</a>
+    </div>
+    <p class="note-line">当前按钮跳转到 App Store 搜索结果页；应用上架后请把链接替换为真实的应用页面地址。</p>
+  </section>
+</main>
+
+<footer>
+  家算 — 房贷 · 二手房税费 · 装修预算本地计算器<br>
+  <div class="links">
+    <a href="index.html">产品主页</a> · <a href="support.html">技术支持</a> · <a href="privacy.html">隐私政策</a> · <a href="terms.html">使用条款</a>
+  </div>
+  © 2026 家算　保留所有权利<br>
+  联系邮箱：miclshui@gmail.com
+</footer>
+</body>
+</html>
